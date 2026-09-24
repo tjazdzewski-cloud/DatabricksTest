@@ -74,7 +74,7 @@ def use(role: str) -> int:
     warehouse = Warehouse(profile, settings["warehouse_id"])
     checks = ", ".join(f"{settings['member_fn']}('{g}')" for g in demo_groups)
     started = time.time()
-    while time.time() - started < 300:
+    while time.time() - started < 420:
         row = warehouse.sql(f"SELECT {checks}")[0]
         live = {g: v for g, v in zip(demo_groups, row)}
         if all((value == "true") == (name == wanted_group) for name, value in live.items()):
@@ -82,7 +82,8 @@ def use(role: str) -> int:
             return 0
         time.sleep(15)
 
-    print("  still not visible after 300s - membership reaches the engine on a refresh schedule")
+    print("  not visible after 420s. Membership reaches the engine on a refresh")
+    print("  schedule, so a role change - and an elevation expiring - is not prompt.")
     return 1
 
 

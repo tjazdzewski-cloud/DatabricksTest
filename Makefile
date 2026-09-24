@@ -3,7 +3,7 @@
 PYTHON := $(shell [ -x .venv/bin/python ] && echo .venv/bin/python || echo python3)
 PY := $(PYTHON) -m src.governance
 
-.PHONY: help deps validate bootstrap seed deploy show whoami gate-on gate-off conflict teardown reset demo role-analyst role-consumer role-full role-none
+.PHONY: help deps drop-policies validate bootstrap seed deploy show whoami gate-on gate-off conflict teardown reset demo role-analyst role-consumer role-full role-none
 
 help:
 	@echo "  make deps        create .venv and install requirements"
@@ -28,6 +28,7 @@ deps:
 
 validate:  ; @$(PY).validate
 bootstrap: ; @$(PY).bootstrap
+drop-policies: ; @$(PY).apply drop-policies
 seed:      ; @$(PY).apply seed
 deploy:    ; @$(PY).apply deploy
 show:      ; @$(PY).apply show

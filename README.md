@@ -76,9 +76,17 @@ tests in step 4 are not optional.
 ## A recorded run
 
 `demo/demo.cast` is a real run of the above, recorded with asciinema. Play it
-back in a terminal with `asciinema play demo/demo.cast`, or read the same run as
-text in `demo/transcript.md`. The pauses in it are genuine: a role change takes
-about fifty seconds to reach the query engine.
+back with `asciinema play demo/demo.cast`, or read the same run as text in
+`demo/transcript.md`. The pauses in it are genuine: every role change took about
+five minutes to reach the query engine, because membership refreshes on a
+schedule rather than on demand.
+
+`demo/demo.mp4` is that recording cut down to two and a half minutes with
+narration over it. The script is `demo/narration.md`, the speech is in
+`demo/audio/`, and `demo/render.py` rebuilds the video from those three. The
+recording is twenty minutes and the narration is under three, so each section is
+played at its own pace and then held on its last frame for as long as the
+narration keeps talking.
 
 ## Two things the demo proves that documentation does not
 

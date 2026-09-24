@@ -31,7 +31,11 @@ def main() -> int:
     print(f"  {'default':12} {'':18} " + ", ".join(f"{k}={v}" for k, v in matrix["default"].items()))
     print("\n  public and internal carry no policy: a read grant is enough.")
 
-    heading("3.", "Before", "Two rows, five columns, nothing applied yet.")
+    heading("3.", "Before",
+            "Two rows, five columns, no policy over them. Policies live on the schema\n"
+            "and outlive the table, so this drops them first - otherwise 'before'\n"
+            "would quietly still be 'after'.")
+    apply.drop_policies()
     apply.seed()
     apply.show()
 

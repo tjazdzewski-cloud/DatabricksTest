@@ -163,6 +163,23 @@ def conflict() -> int:
     return 0
 
 
+def drop_policies() -> int:
+    """Remove the policies but keep the data. Policies attach to the schema, so a
+    table can be recreated underneath one and still be masked."""
+    warehouse, settings = _wh()
+    scope = f"{settings['catalog']}.{settings['schema']}"
+    names = [f"mask_{s}" for s in config.matrix()["default"]] + ["block_unverified", "mask_conflict"]
+    removed = []
+    for name in names:
+        try:
+            warehouse.sql(f"DROP POLICY {name} ON SCHEMA {scope}")
+            removed.append(name)
+        except SqlError:
+            pass
+    print(f"  dropped: {', '.join(removed) if removed else 'nothing was in place'}")
+    return 0
+
+
 def teardown() -> int:
     warehouse, settings = _wh()
     catalog, schema, gov = settings["catalog"], settings["schema"], settings["gov_schema"]
@@ -183,6 +200,7 @@ def teardown() -> int:
 
 
 COMMANDS = {
+    "drop-policies": drop_policies,
     "seed": seed, "deploy": deploy, "show": show, "whoami": whoami,
     "gate-on": gate_on, "gate-off": gate_off, "conflict": conflict, "teardown": teardown,
 }
