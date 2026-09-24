@@ -1,0 +1,16 @@
+# What each level looks like, per mask_shape.
+#
+# {col} is the column value. These render into ONE function that takes and
+# returns VARIANT, so a single definition covers STRING, DECIMAL and DATE.
+# A STRING-returning function over a DECIMAL column fails at read time with
+# CAST_INVALID_INPUT - this is why VARIANT is not optional.
+
+masked: "NULL"
+
+shapes:
+  email:
+    partial: "concat('***@', split_part(CAST({col} AS STRING), '@', 2))"
+  name:
+    partial: "concat(left(CAST({col} AS STRING), 1), '.')"
+  amount:
+    partial: "round(CAST({col} AS DECIMAL(18,2)), -3)"

@@ -1,0 +1,5 @@
+build/*.sql
+__pycache__/
+*.pyc
+.env
+.venv/

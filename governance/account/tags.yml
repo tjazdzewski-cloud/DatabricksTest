@@ -1,0 +1,18 @@
+# Governed tags. Account scope: one definition serves every catalogue in the
+# account. Applied with CREATE GOVERNED TAG, or through the Tag Policy API.
+#
+# These are the attributes the organisation decides to govern by. Nothing else
+# in this repository invents a category; everything refers back to this file.
+
+tags:
+  sensitivity:
+    description: Who may read this column, and in what form.
+    values: [public, internal, confidential, restricted]
+
+  mask_shape:
+    description: What the masked value should look like when it is not read clear.
+    values: [email, name, amount]
+
+  classification:
+    description: Has a human reviewed this table yet.
+    values: [unverified, verified]

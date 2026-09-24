@@ -1,0 +1,33 @@
+# A table contract. The two tag lines on a column are the only place a column's
+# classification is authored - everything else is derived from them.
+
+table: investors
+description: Demo investor master. Two rows, three protected columns, two data types.
+
+columns:
+  investor_id:
+    type: STRING
+    sensitivity: internal
+
+  investor_name:
+    type: STRING
+    sensitivity: confidential
+    mask_shape: name
+
+  investor_email:
+    type: STRING
+    sensitivity: restricted
+    mask_shape: email
+
+  commitment_usd:
+    type: DECIMAL(18,2)
+    sensitivity: confidential
+    mask_shape: amount
+
+  snapshot_date:
+    type: DATE
+    sensitivity: public
+
+sample_rows:
+  - ["I-1", "Jane Doe", "jane.doe@yale.edu", 1250000.00, "2026-09-24"]
+  - ["I-2", "John Roe", "john.roe@example.com", 875500.50, "2026-09-24"]

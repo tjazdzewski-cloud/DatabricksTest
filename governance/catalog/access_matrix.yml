@@ -1,0 +1,34 @@
+# role x sensitivity -> level. This is the only place the rules are written.
+#
+# public and internal carry no policy at all: a read grant is enough for those.
+# A role whose level is `clear` for a sensitivity is exempted from that
+# sensitivity's policy. A role whose level is `partial` becomes a branch inside
+# the masking function. Everyone else falls through to `masked`.
+
+levels: [clear, partial, masked]
+
+roles:
+  full_access:
+    group: poc_full_access
+    confidential: clear
+    restricted: clear
+
+  analyst:
+    group: poc_analyst
+    confidential: clear
+    restricted: partial
+
+  consumer:
+    group: poc_consumer
+    confidential: partial
+    restricted: masked
+
+default:
+  confidential: masked
+  restricted: masked
+
+# Exempt from every mask. Pipeline identities only - never a person, and never
+# anything that sits in front of a SQL endpoint. An identity that is not exempt
+# reads masked values and writes them permanently into the layer below.
+exempt:
+  - poc_etl_sp
