@@ -18,11 +18,31 @@ def _member_of(groups: list[str], member_fn: str) -> str:
     return " OR ".join(f"{member_fn}('{group}')" for group in groups)
 
 
-def _function(sensitivity: str, partial_groups: list[str], settings: dict, masks: dict) -> str:
+def _function(
+    sensitivity: str,
+    partial_groups: list[str],
+    clear_groups: list[str],
+    settings: dict,
+    masks: dict,
+) -> str:
     gov = f"{settings['catalog']}.{settings['gov_schema']}"
     name = f"{gov}.mask_{sensitivity}"
+    member_fn = settings["member_fn"]
+
+    clear_branch = ""
+    if settings["clear_via"] == "function" and clear_groups:
+        clear_branch = f"  WHEN {_member_of(clear_groups, member_fn)} THEN val\n"
 
     if not partial_groups:
+        if clear_branch:
+            return (
+                f"CREATE OR REPLACE FUNCTION {name}(val VARIANT, shape STRING)\n"
+                "RETURNS VARIANT\n"
+                "RETURN CASE\n"
+                f"{clear_branch}"
+                f"  ELSE {masks['masked']}::VARIANT\n"
+                "END"
+            )
         return (
             f"CREATE OR REPLACE FUNCTION {name}(val VARIANT, shape STRING)\n"
             "RETURNS VARIANT\n"
@@ -39,7 +59,8 @@ def _function(sensitivity: str, partial_groups: list[str], settings: dict, masks
         f"CREATE OR REPLACE FUNCTION {name}(val VARIANT, shape STRING)\n"
         "RETURNS VARIANT\n"
         "RETURN CASE\n"
-        f"  WHEN {_member_of(partial_groups, settings['member_fn'])} THEN\n"
+        f"{clear_branch}"
+        f"  WHEN {_member_of(partial_groups, member_fn)} THEN\n"
         "    CASE shape\n"
         f"{branches_sql}\n"
         f"      ELSE {masks['masked']}::VARIANT\n"
@@ -69,6 +90,8 @@ def _policy(sensitivity: str, exempt: list[str], settings: dict) -> str:
 
 
 def _gate(exempt: list[str], settings: dict) -> str:
+    if settings["clear_via"] != "except":
+        exempt = []
     scope = f"{settings['catalog']}.{settings['schema']}"
     gov = f"{settings['catalog']}.{settings['gov_schema']}"
     principals = ", ".join(f"`{group}`" for group in exempt)
@@ -95,8 +118,9 @@ def render() -> dict[str, str]:
     for sensitivity in matrix["default"]:
         partial_groups = [r["group"] for r in roles.values() if r.get(sensitivity) == "partial"]
         clear_groups = [r["group"] for r in roles.values() if r.get(sensitivity) == "clear"]
-        functions.append(_function(sensitivity, partial_groups, settings, masks))
-        policies.append(_policy(sensitivity, clear_groups + exempt_always, settings))
+        functions.append(_function(sensitivity, partial_groups, clear_groups + exempt_always, settings, masks))
+        in_except = (clear_groups + exempt_always) if settings["clear_via"] == "except" else []
+        policies.append(_policy(sensitivity, in_except, settings))
 
     return {
         "010_functions.sql": HEADER + "\n;\n".join(functions),

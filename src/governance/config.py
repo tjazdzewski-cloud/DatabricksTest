@@ -23,6 +23,15 @@ def settings() -> dict:
         # workspace with workspace-local groups, is_member is the one that
         # resolves. `make whoami` tells you which.
         "member_fn": os.environ.get("MEMBER_FN", "is_account_group_member"),
+        # How a role that reads `clear` is let through.
+        #   except   - the group is listed in the policy's EXCEPT clause. Correct,
+        #              and what production should use. Needs ACCOUNT-level groups:
+        #              a workspace-local group is not a principal Unity Catalog
+        #              can see, and policy creation fails with PRINCIPAL_DOES_NOT_EXIST.
+        #   function - the group becomes a branch in the masking function that
+        #              returns the value untouched. Works with workspace-local
+        #              groups, which is all a trial workspace has.
+        "clear_via": os.environ.get("CLEAR_VIA", "except"),
     }
 
 

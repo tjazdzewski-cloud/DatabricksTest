@@ -86,11 +86,16 @@ def show() -> int:
         rows = warehouse.sql(
             f"SELECT {', '.join(columns)} FROM {catalog}.{schema}.{table} ORDER BY 1"
         )
-        widths = [max(len(str(c)), *(len(str(r[i])) for r in rows)) for i, c in enumerate(columns)]
+        widths = [
+            max([len(str(name))] + [len(str(row[i])) for row in rows])
+            for i, name in enumerate(columns)
+        ]
         print("  " + "  ".join(c.ljust(w) for c, w in zip(columns, widths)))
         print("  " + "  ".join("-" * w for w in widths))
         for row in rows:
             print("  " + "  ".join(str(v).ljust(w) for v, w in zip(row, widths)))
+        if not rows:
+            print(f"  no rows. {table} is blocked, not empty.")
     return 0
 
 
