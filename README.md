@@ -73,6 +73,13 @@ tests in step 4 are not optional.
 
 **8. Clean up.** `make teardown`
 
+## A recorded run
+
+`demo/demo.cast` is a real run of the above, recorded with asciinema. Play it
+back in a terminal with `asciinema play demo/demo.cast`, or read the same run as
+text in `demo/transcript.md`. The pauses in it are genuine: a role change takes
+about fifty seconds to reach the query engine.
+
 ## Two things the demo proves that documentation does not
 
 A table owner, even an account admin, is masked like everyone else. Ownership is

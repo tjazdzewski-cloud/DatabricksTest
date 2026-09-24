@@ -83,9 +83,9 @@ def show() -> int:
     for _, contract in config.contracts():
         table = contract["table"]
         columns = list(contract["columns"])
-        rows = warehouse.sql(
-            f"SELECT {', '.join(columns)} FROM {catalog}.{schema}.{table} ORDER BY 1"
-        )
+        statement = f"SELECT {', '.join(columns)} FROM {catalog}.{schema}.{table} ORDER BY 1"
+        print(f"  $ {statement}\n")
+        rows = warehouse.sql(statement)
         widths = [
             max([len(str(name))] + [len(str(row[i])) for row in rows])
             for i, name in enumerate(columns)
