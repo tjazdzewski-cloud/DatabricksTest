@@ -22,10 +22,12 @@ demonstrated, because that needs more than one workspace.
 ## Setup
 
 ```bash
-pip install -r requirements.txt
+make deps                          # creates .venv and installs requirements
 cp .env.example .env && source .env
-make whoami
+make whoami                        # shows which groups resolve for you
 ```
+
+`make help` lists every target.
 
 ## The demo, in order
 
@@ -56,9 +58,18 @@ one leaves a window where a policy is live and its columns are still untagged.
 The same rows now read differently, and the table was never modified. Only the
 rule above it changed.
 
-**5. Who you are changes what you see.** Edit the level in
-`access_matrix.yml` — give `consumer` `clear` instead of `partial` — then
-`make deploy && make show`. One line in one file, and the value changes.
+**5. Who you are changes what you see.** `make role-full`, `make role-analyst`,
+`make role-consumer`, `make role-none` — each puts you in one role and waits
+until the change reaches the query engine. Run `make show` between them. The
+statement and the table never change; only the reader does.
+
+The wait is not the demo being slow. Membership refreshes on a schedule, so a
+role change took about five minutes, four times out of five. An elevation
+expiring is no prompter than one being granted.
+
+The other half of the same idea: edit a level in `access_matrix.yml` — give
+`consumer` `clear` instead of `partial` — then `make deploy && make show`. One
+line in one file, and the value changes for everybody in that role.
 
 **6. The classification gate.** `make gate-on` then `make show`
 
@@ -72,6 +83,9 @@ The error appears only when somebody reads the table — which is why the identi
 tests in step 4 are not optional.
 
 **8. Clean up.** `make teardown`
+
+`make demo` runs all of the above in order with headings, which is what the
+recording below is. `make reset` rebuilds the demo from scratch.
 
 ## A recorded run
 
